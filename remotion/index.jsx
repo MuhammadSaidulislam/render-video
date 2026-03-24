@@ -1,26 +1,19 @@
-// remotion/index.jsx
-import React from "react";
-import { Composition } from "remotion";
+import { AbsoluteFill, useCurrentFrame } from "remotion";
 
-// No TypeScript types here
-export const MyVideo = ({ title = "Default Title" }) => {
+export const MyVideo = ({ title }) => {
+  const frame = useCurrentFrame();
+
   return (
-    <div>
-      <h1>{title}</h1>
-    </div>
+    <AbsoluteFill
+      style={{
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: 60,
+        backgroundColor: "black",
+        color: "white",
+      }}
+    >
+      {title} - Frame {frame}
+    </AbsoluteFill>
   );
 };
-
-export const compositions = [
-  (
-    <Composition
-      id="MyVideo"
-      component={MyVideo}
-      durationInFrames={240}
-      fps={30}
-      width={1920}
-      height={1080}
-      defaultProps={{ title: "Hello Railway" }}
-    />
-  ),
-];
