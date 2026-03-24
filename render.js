@@ -4,21 +4,23 @@ import path from "path";
 import fs from "fs";
 
 export async function renderSkeletonExport(payload, exportId, onProgress) {
-  const bundleLocation = path.resolve("./remotion/entry.jsx");
-  const output = `./output/${exportId}.mp4`;
+  const outputDir = path.resolve("./output");
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir);
 
-  const totalFrames = 240; // same as your composition
+  const bundleLocation = await bundle({
+    entryPoint: path.resolve("./remotion/entry.jsx"),
+  });
 
+  const output = path.join(outputDir, `${exportId}.mp4`);
+
+  // Start render
   await renderMedia({
-    composition: "MyVideo",
     serveUrl: bundleLocation,
+    composition: "MyVideo",
     codec: "h264",
     outputLocation: output,
-    inputProps: { title: payload.title || "Hello" },
-    onProgress: (p) => {
-      const percentage = Math.floor(p * 100);
-      onProgress(percentage); // call back to update exportsStore
-    },
+    inputProps: { title: payload.scenes?.[0]?.title || "Demo Video" },
+    onProgress, // callback to report percentage
   });
 
   return { url: output };

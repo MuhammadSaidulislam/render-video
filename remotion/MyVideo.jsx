@@ -1,3 +1,4 @@
+import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 
 export const MyVideo = ({ title }) => {
