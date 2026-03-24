@@ -1,21 +1,23 @@
-// index.tsx
+// remotion/index.tsx
+import React from "react";
 import { Composition } from "remotion";
-import { MyVideo } from "./MyVideo";
 
-export const RemotionRoot = () => {
+export const MyVideo: React.FC<{ title?: string }> = ({ title = "Default Title" }) => {
   return (
-    <>
-      <Composition
-        id="MyVideo"
-        component={MyVideo}
-        durationInFrames={150}
-        fps={30}
-        width={1280}
-        height={720}
-        defaultProps={{
-          title: "Hello World", // Must match your component props
-        }}
-      />
-    </>
+    <div style={{ flex: 1, backgroundColor: "black", color: "white" }}>
+      <h1>{title}</h1>
+    </div>
   );
 };
+
+export const compositions = [
+  <Composition
+    id="MyVideo"
+    component={MyVideo}
+    durationInFrames={240}
+    fps={30}
+    width={1920}
+    height={1080}
+    defaultProps={{ title: "Hello Railway" }}
+  />,
+];

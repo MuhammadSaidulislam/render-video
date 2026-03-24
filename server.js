@@ -14,7 +14,7 @@ app.post("/render", async (req, res) => {
     const { composition = "MyVideo", inputProps = {} } = req.body;
 
     const bundleLocation = await bundle({
-      entryPoint: path.resolve("./remotion/index.tsx"),
+        entryPoint: path.resolve("./remotion/entry.tsx"),
     });
 
     const outputDir = path.resolve("./output");
