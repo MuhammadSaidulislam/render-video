@@ -1,0 +1,21 @@
+{
+  "name": "render-worker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@remotion/bundler": "^4.0.438",
+    "@remotion/renderer": "^4.0.438",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14"
+  }
+}
