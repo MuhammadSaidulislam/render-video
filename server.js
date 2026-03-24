@@ -1,7 +1,7 @@
 // server.js
 const express = require("express");
 const cors = require("cors");
-import { renderSkeletonExport } from "./remotion/index.js"; // Your Remotion render function
+import { renderSkeletonExport } from "./remotion/index.jsx"; // Your Remotion render function
 
 // Simple in-memory store for exports
 const exportsStore = new Map();
