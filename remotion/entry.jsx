@@ -1,9 +1,6 @@
 import { registerRoot } from "remotion";
-import { MyVideo } from "./index.jsx";
+import { MyVideo } from "./MyVideo.jsx";
 
-// Wrapper (no TypeScript)
-const VideoWrapper = () => {
-  return <MyVideo title="Default Title" />;
-};
+const VideoWrapper = () => <MyVideo title="Default Title" />;
 
 registerRoot(VideoWrapper);

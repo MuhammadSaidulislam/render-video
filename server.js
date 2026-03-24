@@ -2,28 +2,61 @@ import express from "express";
 import cors from "cors";
 import { renderSkeletonExport } from "./render.js";
 
+// Simple in-memory export store
+const exportsStore = new Map();
+
+async function createExport(exportId, userId) {
+  exportsStore.set(exportId, {
+    exportId,
+    userId,
+    status: "rendering",
+    videoUrl: null,
+    error: null,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+  return exportsStore.get(exportId);
+}
+
+async function updateExport(exportId, updates) {
+  const current = exportsStore.get(exportId);
+  exportsStore.set(exportId, { ...current, ...updates, updatedAt: Date.now() });
+  return exportsStore.get(exportId);
+}
+
+// Express setup
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const store = new Map();
+// --- /render endpoint ---
+app.post("/render", async (req, res) => {
+  try {
+    const payload = req.body;
+    const exportId = `skel-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-// POST /render
-app.post("/render", (req, res) => {
-   const exportId = `skel-${Date.now()}`;
+    await createExport(exportId, payload.userId);
 
-  renderSkeletonExport(req.body, exportId)
-    .then((result) => console.log("Render done:", result.url))
-    .catch((err) => console.error("Render failed:", err));
+    // Render video asynchronously
+    renderSkeletonExport(payload, exportId)
+      .then((result) => updateExport(exportId, { status: "done", videoUrl: result.url }))
+      .catch((err) => updateExport(exportId, { status: "error", error: err.message }));
 
-  res.json({ exportId, status: "rendering" });
+    res.json({ ok: true, exportId, status: "rendering" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to start render" });
+  }
 });
 
-// GET /status
+// --- /status endpoint ---
 app.get("/status", (req, res) => {
-  res.json(store.get(req.query.exportId) || { status: "not found" });
+  const { exportId } = req.query;
+  if (!exportId) return res.status(400).json({ error: "exportId required" });
+  const status = exportsStore.get(exportId) || { status: "not found" };
+  res.json(status);
 });
 
-app.listen(process.env.PORT || 5000, () =>
-  console.log("Worker running")
-);
+// --- Start server ---
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Render worker running on port ${PORT}`));

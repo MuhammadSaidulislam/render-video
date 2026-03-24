@@ -2,7 +2,6 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 
 export const MyVideo = ({ title }) => {
   const frame = useCurrentFrame();
-
   return (
     <AbsoluteFill
       style={{
