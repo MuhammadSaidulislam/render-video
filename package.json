@@ -13,6 +13,7 @@
   "dependencies": {
     "@remotion/bundler": "^4.0.438",
     "@remotion/renderer": "^4.0.438",
+    "cors": "^2.8.6",
     "express": "^5.2.1"
   },
   "devDependencies": {
