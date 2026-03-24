@@ -10,13 +10,11 @@ const store = new Map();
 
 // POST /render
 app.post("/render", (req, res) => {
-  const exportId = `skel-${Date.now()}`;
-
-  store.set(exportId, { status: "rendering" });
+   const exportId = `skel-${Date.now()}`;
 
   renderSkeletonExport(req.body, exportId)
-    .then((r) => store.set(exportId, { status: "done", url: r.url }))
-    .catch((e) => store.set(exportId, { status: "error", error: e.message }));
+    .then((result) => console.log("Render done:", result.url))
+    .catch((err) => console.error("Render failed:", err));
 
   res.json({ exportId, status: "rendering" });
 });
