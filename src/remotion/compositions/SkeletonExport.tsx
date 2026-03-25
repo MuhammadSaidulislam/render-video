@@ -22,23 +22,40 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({ scene
     easing: Easing.ease,
   });
 
-  const videoSrc = scene.videoUrl || (scene as any).url || "";
-  const imageSrc = scene.imageUrl || "";
+  const imageSrc = scene.imageUrl || (scene as any).thumbnailUrl || "";
+
+  // Background colors per scene for visual variety
+  const colors = ["#1a1a2e", "#16213e", "#0f3460", "#533483"];
+  const bgColor = colors[frame % colors.length] || "#000";
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#000", opacity }}>
-      {/* Use Img instead of Video — much less memory */}
-      {videoSrc && (
-        <Img
-          src={`${videoSrc}?format=jpg`}  // fal.media supports this
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
-      )}
-      {!videoSrc && imageSrc && (
+    <AbsoluteFill style={{ backgroundColor: bgColor, opacity }}>
+      {/* Only load static images — no video (too much memory) */}
+      {imageSrc && (
         <Img
           src={imageSrc}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
+      )}
+      {scene.text && (
+        <AbsoluteFill style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "40px",
+        }}>
+          <p style={{
+            color: "#fff",
+            fontSize: 48,
+            fontWeight: 700,
+            textAlign: "center",
+            textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+            fontFamily: "sans-serif",
+            margin: 0,
+          }}>
+            {scene.text}
+          </p>
+        </AbsoluteFill>
       )}
     </AbsoluteFill>
   );
