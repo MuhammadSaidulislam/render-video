@@ -16,7 +16,7 @@ export async function getBundlePath(): Promise<string> {
   if (bundlePromise) return bundlePromise;
 
   bundlePromise = (async () => {
-    const entryPoint = path.resolve(__dirname, "./remotion/index.ts");
+    const entryPoint = path.resolve(__dirname, "../src/remotion/index.ts");
 
     console.log("[bundle] Starting Remotion bundle...");
     console.log("[bundle] Entry point:", entryPoint);
