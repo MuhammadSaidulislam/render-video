@@ -77,32 +77,39 @@ const CaptionLayer: React.FC<{
 
   if (!active) return null;
 
-  const position = defaultStyle.position;
-  const verticalStyle: React.CSSProperties =
-    position === "top"
-      ? { top: 80 }
-      : position === "bottom"
-        ? { bottom: 120 }
-        : position === "center"
-          ? { top: "50%", transform: "translateY(-50%)" }
-          : {};
+  const posX = (defaultStyle as any).posX ?? 50; // percentage 0-100
+  const posY = (defaultStyle as any).posY ?? 50; // percentage 0-100
+
+  const strokeWidth = (defaultStyle as any).strokeWidth ?? 0;
+  const strokeColor = (defaultStyle as any).strokeColor ?? "transparent";
+  const shadowX = (defaultStyle as any).shadowX ?? 0;
+  const shadowY = (defaultStyle as any).shadowY ?? 0;
+  const shadowBlur = (defaultStyle as any).shadowBlur ?? 0;
+  const shadowColor = (defaultStyle as any).shadowColor ?? "transparent";
+  const bold = (defaultStyle as any).bold ?? false;
 
   return (
     <AbsoluteFill>
       <div
         style={{
           position: "absolute",
-          left: "10%",
-          right: "10%",
-          ...verticalStyle,
-          textAlign: defaultStyle.textAlign as React.CSSProperties["textAlign"],
-          fontFamily: defaultStyle.fontFamily,
-          fontSize: defaultStyle.fontSize,
-          fontWeight: defaultStyle.fontWeight as React.CSSProperties["fontWeight"],
-          color: defaultStyle.color,
-          backgroundColor: defaultStyle.backgroundColor,
-          padding: "12px 20px",
-          borderRadius: 8,
+          left: `${posX}%`,
+          top: `${posY}%`,
+          transform: "translate(-50%, -50%)", // center on the point
+          width: "80%",
+          textAlign: "center",
+          fontFamily: defaultStyle.fontFamily ?? "sans-serif",
+          fontSize: defaultStyle.fontSize ?? 36,
+          fontWeight: bold ? 700 : 400,
+          color: defaultStyle.color ?? "#ffffff",
+          // Text stroke via webkit
+          WebkitTextStroke: strokeWidth ? `${strokeWidth}px ${strokeColor}` : undefined,
+          // Text shadow
+          textShadow: shadowBlur || shadowX || shadowY
+            ? `${shadowX}px ${shadowY}px ${shadowBlur}px ${shadowColor}`
+            : undefined,
+          padding: "8px 16px",
+          borderRadius: 6,
         }}
       >
         {active.text}
