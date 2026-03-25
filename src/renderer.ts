@@ -45,16 +45,22 @@ export async function renderVideo(payload: RenderPayload): Promise<string> {
 
   // ─── Bundle ───────────────────────────────────────────────────────────────
   const bundleLocation = await getBundlePath();
-
+// Sanitize URLs — reject relative paths, only allow full http/https URLs
+function sanitizeUrl(url: string | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  console.warn(`[renderer] Skipping non-http URL: ${url}`);
+  return ""; // return empty so Remotion skips it
+}
   // ─── Composition input props (passed into your Remotion composition) ──────
   const inputProps = {
-    scenes: payload.scenes,
-    voiceoverUrl: payload.voiceoverUrl,
-    musicUrl: payload.musicUrl,
-    musicVolume: payload.musicVolume,
-    captions: payload.captions,
-    defaultCaptionStyle: payload.defaultCaptionStyle,
-  };
+  scenes: payload.scenes,
+  voiceoverUrl: sanitizeUrl(payload.voiceoverUrl),
+  musicUrl: sanitizeUrl(payload.musicUrl),       // ← sanitized
+  musicVolume: payload.musicVolume,
+  captions: payload.captions,
+  defaultCaptionStyle: payload.defaultCaptionStyle,
+};
 
   // ─── Select composition (validates it exists in the bundle) ───────────────
   const composition = await selectComposition({
