@@ -68,25 +68,27 @@ export async function renderVideo(payload: RenderPayload): Promise<string> {
   let lastLoggedProgress = -1;
 
   await renderMedia({
-    composition: finalComposition,
-    serveUrl: bundleLocation,
-    codec: "h264",
-    outputLocation: outputPath,
-    inputProps,
-    chromiumOptions: {
-      disableWebSecurity: true, // needed for cross-origin media URLs
-      gl: "swiftshader",        // software rendering (no GPU on Railway)
-    },
-    onProgress: ({ progress }) => {
-      const pct = Math.round(progress * 100);
-      if (pct !== lastLoggedProgress && pct % 10 === 0) {
-        lastLoggedProgress = pct;
-        console.log(`[renderer] ${exportId} render progress: ${pct}%`);
-      }
-    },
-    // Concurrency: leave 1 CPU free for the Express server
-    concurrency: Math.max(1, (os.cpus().length || 2) - 1),
-  });
+  composition: finalComposition,
+  serveUrl: bundleLocation,
+  codec: "h264",
+  outputLocation: outputPath,
+  inputProps,
+  browserExecutable: "/usr/bin/chromium", // ← tell Remotion exactly where Chrome is
+  chromiumOptions: {
+    disableWebSecurity: true,
+    gl: "swiftshader",
+    ignoreCertificateErrors: true,
+    headless: true,
+  },
+  onProgress: ({ progress }) => {
+    const pct = Math.round(progress * 100);
+    if (pct !== lastLoggedProgress && pct % 10 === 0) {
+      lastLoggedProgress = pct;
+      console.log(`[renderer] ${exportId} render progress: ${pct}%`);
+    }
+  },
+  concurrency: Math.max(1, (os.cpus().length || 2) - 1),
+});
 
   console.log(`[renderer] ${exportId} ✅ render complete → ${outputPath}`);
   return outputPath;
