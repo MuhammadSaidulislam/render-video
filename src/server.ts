@@ -100,18 +100,17 @@ app.use((_req: Request, res: Response) => {
 
 // ─── Start server + pre-warm bundle ───────────────────────────────────────────
 
-const PORT = env.PORT;
+const PORT = env.PORT || 3000;
 
-app.listen(PORT, async () => {
+app.listen(PORT, "0.0.0.0", async () => {  // ← "0.0.0.0" is critical
   console.log(`[server] 🚀 Listening on port ${PORT}`);
   console.log(`[server] Pre-warming Remotion bundle...`);
 
   try {
-    await getBundlePath(); // bundle once at startup — all renders reuse this
+    await getBundlePath();
     console.log("[server] ✅ Ready to render");
   } catch (err) {
     console.error("[server] ❌ Bundle pre-warm failed:", err);
-    // Don't crash — first render will attempt to bundle again
   }
 });
 
