@@ -79,13 +79,16 @@ const CaptionLayer: React.FC<{
 
   const merged = { ...defaultStyle, ...(active.style ?? {}) };
 
-  const position = merged.position ?? "center";
+  // Build vertical position from backend value — no hardcoded fallback
+  const position = merged.position;
   const verticalStyle: React.CSSProperties =
     position === "top"
-      ? { top: 80, bottom: undefined }
-      : position === "center"
-        ? { top: "50%", transform: "translateY(-50%)" }
-        : { bottom: 120, top: undefined };
+      ? { top: 80 }
+      : position === "bottom"
+        ? { bottom: 120 }
+        : position === "center"
+          ? { top: "50%", transform: "translateY(-50%)" }
+          : {}; // ← no position from backend = no override, use whatever CSS defaults
 
   return (
     <AbsoluteFill>
@@ -95,12 +98,12 @@ const CaptionLayer: React.FC<{
           left: "10%",
           right: "10%",
           ...verticalStyle,
-          textAlign: (merged.textAlign as React.CSSProperties["textAlign"]) ?? "center",
-          fontFamily: merged.fontFamily ?? "sans-serif",
-          fontSize: merged.fontSize ?? 36,
-          fontWeight: (merged.fontWeight as React.CSSProperties["fontWeight"]) ?? 700,
-          color: merged.color ?? "#ffffff",
-          backgroundColor: merged.backgroundColor ?? "rgba(0,0,0,0.5)",
+          textAlign: (merged.textAlign as React.CSSProperties["textAlign"]),
+          fontFamily: merged.fontFamily,
+          fontSize: merged.fontSize,
+          fontWeight: (merged.fontWeight as React.CSSProperties["fontWeight"]),
+          color: merged.color,
+          backgroundColor: merged.backgroundColor,
           padding: "12px 20px",
           borderRadius: 8,
         }}
