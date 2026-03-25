@@ -10,7 +10,7 @@ export const MyVideo = ({ title }) => {
         alignItems: "center",
         fontSize: 60,
         backgroundColor: "black",
-        color: "white",
+        color: "white"
       }}
     >
       {title} - Frame {frame}
