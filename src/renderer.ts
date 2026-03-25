@@ -25,7 +25,7 @@ const HEIGHT = 1280; // 9:16 vertical — adjust to 1920x1080 for landscape
  */
 export async function renderVideo(payload: RenderPayload): Promise<string> {
   const { exportId, scenes } = payload;
-
+console.log("[debug] scene URLs:", payload.scenes.map((s: any) => s.url || s.videoUrl));
   // ─── Paths ────────────────────────────────────────────────────────────────
   const workDir = path.join(os.tmpdir(), "remotion-exports", exportId);
   const outputPath = path.join(workDir, `${exportId}.mp4`);
@@ -84,25 +84,22 @@ function sanitizeUrl(url: string | undefined): string {
   let lastLoggedProgress = -1;
 
 await renderMedia({
-   ...BROWSER,
   composition: finalComposition,
   serveUrl: bundleLocation,
   codec: "h264",
   outputLocation: outputPath,
   inputProps,
-  browserExecutable: "/usr/bin/chromium",
+  ...BROWSER,
   chromiumOptions: {
     disableWebSecurity: true,
     gl: "swiftshader",
     ignoreCertificateErrors: true,
     headless: true,
   },
-  concurrency: 1,        // ← already 1, keep it
-  timeoutInMilliseconds: 180000,
-  imageFormat: "jpeg",  // ← jpeg uses much less memory than png
+  concurrency: 1,
+  timeoutInMilliseconds: 60000,          // 60s per frame timeout
+  imageFormat: "jpeg",
   jpegQuality: 80,
-  encodingMaxRate: "2M",     // ← cap bitrate to save memory
-  encodingBufferSize: "4M",
   onProgress: ({ progress }) => {
     const pct = Math.round(progress * 100);
     if (pct !== lastLoggedProgress && pct % 10 === 0) {

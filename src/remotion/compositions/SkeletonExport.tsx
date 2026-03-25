@@ -21,47 +21,31 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({
 }) => {
   const frame = useCurrentFrame();
 
-  // Fade in over 10 frames
   const opacity = interpolate(frame, [0, 10], [0, 1], {
     extrapolateRight: "clamp",
     easing: Easing.ease,
   });
 
-  const containerStyle: React.CSSProperties = {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#000",
-    opacity,
-    ...(scene.style as React.CSSProperties | undefined),
-  };
+  // normalize — your scenes use "url" field
+  const videoSrc = scene.videoUrl || (scene as any).url || "";
+  const imageSrc = scene.imageUrl || "";
 
   return (
-    <AbsoluteFill style={containerStyle}>
-      {/* Background image */}
-      {scene.imageUrl && (
-        <Img
-          src={scene.imageUrl}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
-      )}
-
-      {/* Background video */}
-      {scene.videoUrl && (
+    <AbsoluteFill style={{ backgroundColor: "#000", opacity }}>
+      {videoSrc && (
         <Video
-          src={scene.videoUrl}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
+          src={videoSrc}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          // Don't wait for full video load — just show frames as they come
+          pauseWhenBuffering={false}
         />
       )}
-
-      {/* Scene text overlay */}
+      {!videoSrc && imageSrc && (
+        <Img
+          src={imageSrc}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      )}
       {scene.text && (
         <AbsoluteFill
           style={{
@@ -71,17 +55,15 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({
             padding: "40px",
           }}
         >
-          <p
-            style={{
-              color: "#fff",
-              fontSize: 48,
-              fontWeight: 700,
-              textAlign: "center",
-              textShadow: "0 2px 8px rgba(0,0,0,0.8)",
-              fontFamily: "sans-serif",
-              margin: 0,
-            }}
-          >
+          <p style={{
+            color: "#fff",
+            fontSize: 48,
+            fontWeight: 700,
+            textAlign: "center",
+            textShadow: "0 2px 8px rgba(0,0,0,0.8)",
+            fontFamily: "sans-serif",
+            margin: 0,
+          }}>
             {scene.text}
           </p>
         </AbsoluteFill>
@@ -89,7 +71,6 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({
     </AbsoluteFill>
   );
 };
-
 // ─── Caption component ────────────────────────────────────────────────────────
 
 const CaptionLayer: React.FC<{
