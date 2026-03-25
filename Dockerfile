@@ -1,22 +1,37 @@
-# Official Remotion base image — includes Chrome, ffmpeg, and all system deps
-FROM ghcr.io/remotion-dev/base:4.0.290
+FROM node:20-bookworm-slim
+
+# Install Chrome + ffmpeg dependencies
+RUN apt-get update && apt-get install -y \
+  chromium \
+  ffmpeg \
+  fonts-liberation \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libcups2 \
+  libdbus-1-3 \
+  libdrm2 \
+  libgbm1 \
+  libnspr4 \
+  libnss3 \
+  libxcomposite1 \
+  libxdamage1 \
+  libxfixes3 \
+  libxkbcommon0 \
+  libxrandr2 \
+  xdg-utils \
+  --no-install-recommends \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV CHROMIUM_FLAGS="--no-sandbox --disable-dev-shm-usage"
 
 WORKDIR /app
 
-# Copy package files first for better layer caching
 COPY package*.json ./
-
-# Install all dependencies
 RUN npm ci --prefer-offline
 
-# Copy source code
 COPY . .
-
-# Build TypeScript
 RUN npm run build
 
-# Expose the port Railway will use
 EXPOSE 3000
-
-# Start the server
 CMD ["npm", "start"]
