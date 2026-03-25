@@ -16,8 +16,10 @@ process.env.CHROMIUM_FLAGS = [
 ].join(" ");
 const COMPOSITION_ID = "SkeletonExport";
 const FPS = 30;
-const WIDTH = 540;
-const HEIGHT = 960; // 9:16 vertical — adjust to 1920x1080 for landscape
+// const WIDTH = 540;
+// const HEIGHT = 960;
+const WIDTH = 1080;
+const HEIGHT = 1920; // 9:16 vertical — adjust to 1920x1080 for landscape
 
 /**
  * Renders a video for the given payload.
