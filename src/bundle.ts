@@ -14,7 +14,16 @@ export async function getBundlePath(): Promise<string> {
 
   // If a bundle is already in progress, wait for it
   if (bundlePromise) return bundlePromise;
-
+  // Set chrome flags for container environment
+  process.env.CHROMIUM_FLAGS = [
+    "--no-sandbox",
+    "--disable-setuid-sandbox", 
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--no-first-run",
+    "--no-zygote",
+    "--single-process",
+  ].join(" ");
   bundlePromise = (async () => {
     const entryPoint = path.resolve(__dirname, "../src/remotion/index.ts");
 

@@ -4,7 +4,15 @@ import path from "path";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import { getBundlePath } from "./bundle";
 import type { RenderPayload } from "./types";
-
+process.env.CHROMIUM_FLAGS = [
+  "--no-sandbox",
+  "--disable-setuid-sandbox",
+  "--disable-dev-shm-usage",
+  "--disable-gpu",
+  "--no-first-run",
+  "--no-zygote",
+  "--single-process",
+].join(" ");
 const COMPOSITION_ID = "SkeletonExport";
 const FPS = 30;
 const WIDTH = 1080;
@@ -67,19 +75,20 @@ export async function renderVideo(payload: RenderPayload): Promise<string> {
   // ─── Render ───────────────────────────────────────────────────────────────
   let lastLoggedProgress = -1;
 
-  await renderMedia({
+await renderMedia({
   composition: finalComposition,
   serveUrl: bundleLocation,
   codec: "h264",
   outputLocation: outputPath,
   inputProps,
-  browserExecutable: "/usr/bin/chromium", // ← tell Remotion exactly where Chrome is
+  browserExecutable: "/usr/bin/chromium",
   chromiumOptions: {
     disableWebSecurity: true,
     gl: "swiftshader",
     ignoreCertificateErrors: true,
     headless: true,
   },
+  concurrency: 1,
   onProgress: ({ progress }) => {
     const pct = Math.round(progress * 100);
     if (pct !== lastLoggedProgress && pct % 10 === 0) {
@@ -87,7 +96,6 @@ export async function renderVideo(payload: RenderPayload): Promise<string> {
       console.log(`[renderer] ${exportId} render progress: ${pct}%`);
     }
   },
-  concurrency: Math.max(1, (os.cpus().length || 2) - 1),
 });
 
   console.log(`[renderer] ${exportId} ✅ render complete → ${outputPath}`);
