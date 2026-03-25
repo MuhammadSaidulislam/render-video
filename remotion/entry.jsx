@@ -1,6 +1,6 @@
-import { registerRoot } from "remotion";
-import { MyVideo } from "./MyVideo";
+const { registerRoot } = require("remotion");
+const { MyVideo } = require("./MyVideo");
 
-const VideoWrapper = () => <MyVideo title="Demo Video" />;
+const Root = () => <MyVideo title="Demo Video" />;
 
-registerRoot(VideoWrapper);
+registerRoot(Root);

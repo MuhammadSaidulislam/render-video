@@ -1,8 +1,8 @@
-import React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+const { AbsoluteFill, useCurrentFrame } = require("remotion");
 
-export const MyVideo = ({ title }) => {
+const MyVideo = ({ title }) => {
   const frame = useCurrentFrame();
+
   return (
     <AbsoluteFill
       style={{
@@ -10,10 +10,12 @@ export const MyVideo = ({ title }) => {
         alignItems: "center",
         fontSize: 60,
         backgroundColor: "black",
-        color: "white"
+        color: "white",
       }}
     >
       {title} - Frame {frame}
     </AbsoluteFill>
   );
 };
+
+module.exports = { MyVideo };

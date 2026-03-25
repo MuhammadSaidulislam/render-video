@@ -1,30 +1,30 @@
-import { bundle } from "@remotion/bundler";
-import { renderMedia } from "@remotion/renderer";
-import path from "path";
+const { bundle } = require("@remotion/bundler");
+const { renderMedia } = require("@remotion/renderer");
+const path = require("path");
+const fs = require("fs");
 
-export async function renderSkeletonExport(payload, exportId, onProgress) {
+async function run() {
+  const exportId = process.argv[2];
+
+  console.log("🎬 Rendering:", exportId);
+
   const bundleLocation = await bundle({
-    entryPoint: path.resolve("./remotion/entry.jsx")
+    entryPoint: path.resolve("./remotion/entry.jsx"),
   });
 
-  const output = path.resolve(`./output/${exportId}.mp4`);
+  const outputPath = path.resolve(`./output/${exportId}.mp4`);
 
-  let lastProgress = 0;
   await renderMedia({
     composition: "MyVideo",
     serveUrl: bundleLocation,
     codec: "h264",
-    outputLocation: output,
-    inputProps: { title: payload.title || "Demo Video" },
-    onProgress: (p) => {
-      // only update if progress increased
-      const percentage = Math.floor(p * 100);
-      if (percentage > lastProgress) {
-        lastProgress = percentage;
-        if (onProgress) onProgress(percentage);
-      }
-    }
+    outputLocation: outputPath,
+    inputProps: { title: "Railway Video" },
   });
 
-  return { url: `output/${exportId}.mp4` };
+  console.log("✅ Render done:", outputPath);
 }
+
+run().catch((err) => {
+  console.error("❌ Render failed:", err);
+});
