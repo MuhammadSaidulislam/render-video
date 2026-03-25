@@ -46,7 +46,8 @@ app.get("/health", (_req: Request, res: Response) => {
 
 app.post("/render", requireSecret, async (req: Request, res: Response) => {
   const startTime = Date.now();
-
+ console.log("[debug] first scene:", JSON.stringify(req.body.scenes?.[0]));
+  console.log("[debug] first caption:", JSON.stringify(req.body.captions?.[0]));
   // ── Validate payload ──────────────────────────────────────────────────────
   const parsed = RenderPayloadSchema.safeParse(req.body);
   if (!parsed.success) {

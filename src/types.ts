@@ -18,10 +18,29 @@ export type CaptionStyle = z.infer<typeof CaptionStyleSchema>;
 
 export const CaptionSchema = z.object({
   text: z.string(),
-  startFrame: z.number(),
-  endFrame: z.number(),
+  // accept both naming conventions
+  startFrame: z.number().optional(),
+  endFrame: z.number().optional(),
+  start: z.number().optional(),
+  end: z.number().optional(),
+  startTime: z.number().optional(),
+  endTime: z.number().optional(),
   style: CaptionStyleSchema.optional(),
-}).passthrough();
+}).passthrough()
+  .transform((caption) => ({
+    ...caption,
+    // normalize to startFrame/endFrame (30fps)
+    startFrame:
+      caption.startFrame ??
+      (caption.startTime ? Math.round(caption.startTime * 30) : null) ??
+      (caption.start ? Math.round(caption.start * 30) : null) ??
+      0,
+    endFrame:
+      caption.endFrame ??
+      (caption.endTime ? Math.round(caption.endTime * 30) : null) ??
+      (caption.end ? Math.round(caption.end * 30) : null) ??
+      30,
+  }));
 
 export type Caption = z.infer<typeof CaptionSchema>;
 
@@ -31,11 +50,23 @@ export const SceneSchema = z.object({
   id: z.string().optional(),
   imageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
-  durationInFrames: z.number().int().positive(),
+  // accept both field names
+  durationInFrames: z.number().int().positive().optional(),
+  duration: z.number().optional(),
+  durationSeconds: z.number().optional(),
   text: z.string().optional(),
   style: z.record(z.unknown()).optional(),
   transition: z.string().optional(),
-}).passthrough();
+}).passthrough()
+  .transform((scene) => ({
+    ...scene,
+    // normalize to durationInFrames (30fps)
+    durationInFrames:
+      scene.durationInFrames ??
+      (scene.durationSeconds ? Math.round(scene.durationSeconds * 30) : null) ??
+      (scene.duration ? Math.round(scene.duration * 30) : null) ??
+      90, // fallback: 3 seconds
+  }));
 
 export type Scene = z.infer<typeof SceneSchema>;
 
