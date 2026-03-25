@@ -74,7 +74,9 @@ app.get("/status", async (req, res) => {
   const status = await getExportStatus(exportId);
   res.json(status || { status: "not found" });
 });
-
+app.get("/", (req, res) => {
+  res.send("Server is running ✅");
+});
 // --- start server ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Render worker running on port ${PORT}`));
