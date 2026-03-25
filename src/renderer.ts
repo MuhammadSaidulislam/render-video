@@ -94,7 +94,8 @@ await renderMedia({
     ignoreCertificateErrors: true,
     headless: true,
   },
-  concurrency: 1,
+  concurrency: 1,        // ← already 1, keep it
+  timeoutInMilliseconds: 120000, // ← increase timeout to 2 min
   onProgress: ({ progress }) => {
     const pct = Math.round(progress * 100);
     if (pct !== lastLoggedProgress && pct % 10 === 0) {
