@@ -77,6 +77,9 @@ app.get("/status", async (req, res) => {
 app.get("/", (req, res) => {
   res.send("Server is running ✅");
 });
+app.get("/test", (req, res) => {
+  res.json({ ok: true });
+});
 // --- start server ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Render worker running on port ${PORT}`));
