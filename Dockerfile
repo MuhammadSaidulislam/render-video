@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y \
   ca-certificates \
   fonts-liberation \
   fonts-noto \
-  fonts-noto-color-emoji \
   libatk-bridge2.0-0 \
   libatk1.0-0 \
   libc6 \
@@ -17,7 +16,6 @@ RUN apt-get update && apt-get install -y \
   libexpat1 \
   libfontconfig1 \
   libgbm1 \
-  libgcc1 \
   libglib2.0-0 \
   libgtk-3-0 \
   libnspr4 \
@@ -39,26 +37,22 @@ RUN apt-get update && apt-get install -y \
   libxrender1 \
   libxss1 \
   libxtst6 \
-  lsb-release \
-  wget \
   xdg-utils \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
-
-# Add before CMD:
-ENV NODE_OPTIONS="--max-old-space-size=400"
-# Use less memory for ffmpeg
-ENV REMOTION_FFMPEG_ARGS="-preset ultrafast -crf 28"
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-ENV CHROMIUM_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu"
-# Increase shared memory for Chrome
-ENV REMOTION_CHROME_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage"
+ENV REMOTION_CHROME_EXECUTABLE_PATH=/usr/bin/chromium
+ENV NODE_OPTIONS="--max-old-space-size=400"
+
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci --prefer-offline
+
+# Pre-download Remotion's Chrome during build (not at runtime)
+RUN npx remotion browser ensure
 
 COPY . .
 RUN npm run build

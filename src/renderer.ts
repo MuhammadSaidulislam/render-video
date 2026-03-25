@@ -4,6 +4,7 @@ import path from "path";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import { getBundlePath } from "./bundle";
 import type { RenderPayload } from "./types";
+import { BROWSER } from "./bundle";
 process.env.CHROMIUM_FLAGS = [
   "--no-sandbox",
   "--disable-setuid-sandbox",
@@ -64,9 +65,10 @@ function sanitizeUrl(url: string | undefined): string {
 
   // ─── Select composition (validates it exists in the bundle) ───────────────
   const composition = await selectComposition({
-    serveUrl: bundleLocation,
-    id: COMPOSITION_ID,
-    inputProps,
+   serveUrl: bundleLocation,
+  id: COMPOSITION_ID,
+  inputProps,
+   ...BROWSER,
   });
 
   // ─── Override duration with actual scene data ─────────────────────────────
@@ -82,6 +84,7 @@ function sanitizeUrl(url: string | undefined): string {
   let lastLoggedProgress = -1;
 
 await renderMedia({
+   ...BROWSER,
   composition: finalComposition,
   serveUrl: bundleLocation,
   codec: "h264",

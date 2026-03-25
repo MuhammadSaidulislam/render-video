@@ -1,30 +1,38 @@
 import path from "path";
 import { bundle } from "@remotion/bundler";
+import { ensureBrowser } from "@remotion/renderer";
 
 let cachedBundlePath: string | null = null;
 let bundlePromise: Promise<string> | null = null;
 
-/**
- * Returns the Remotion bundle path.
- * Bundles exactly once on first call — subsequent calls return the cached path.
- * Thread-safe: concurrent calls during startup share the same promise.
- */
+export const BROWSER = {
+  browserExecutable: "/usr/bin/chromium",
+  onBrowserDownload: () => ({
+    version: null as null,
+    browserExecutable: "/usr/bin/chromium",
+    onProgress: () => undefined,
+  }),
+};
+
 export async function getBundlePath(): Promise<string> {
   if (cachedBundlePath) return cachedBundlePath;
-
-  // If a bundle is already in progress, wait for it
   if (bundlePromise) return bundlePromise;
-  // Set chrome flags for container environment
+
   process.env.CHROMIUM_FLAGS = [
     "--no-sandbox",
-    "--disable-setuid-sandbox", 
+    "--disable-setuid-sandbox",
     "--disable-dev-shm-usage",
     "--disable-gpu",
     "--no-first-run",
     "--no-zygote",
     "--single-process",
   ].join(" ");
+
   bundlePromise = (async () => {
+    await ensureBrowser({
+      ...BROWSER,
+    });
+
     const entryPoint = path.resolve(__dirname, "../src/remotion/index.ts");
 
     console.log("[bundle] Starting Remotion bundle...");
@@ -34,7 +42,6 @@ export async function getBundlePath(): Promise<string> {
 
     const bundlePath = await bundle({
       entryPoint,
-      // Silence webpack progress spam in production logs
       onProgress: (progress) => {
         if (progress % 25 === 0) {
           console.log(`[bundle] webpack progress: ${progress}%`);
