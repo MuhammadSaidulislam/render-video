@@ -51,9 +51,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --prefer-offline
 
-# Pre-download Remotion's Chrome during build (not at runtime)
-RUN npx remotion browser ensure
-
 COPY . .
 RUN npm run build
 
