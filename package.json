@@ -9,7 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@remotion/bundler": "^4.0.438",
     "@remotion/renderer": "^4.0.438",
