@@ -15,29 +15,23 @@ import type { Scene, Caption } from "../../types";
 
 // ─── Scene component ──────────────────────────────────────────────────────────
 
-const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({
-  scene,
-  durationInFrames,
-}) => {
+const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({ scene }) => {
   const frame = useCurrentFrame();
-
   const opacity = interpolate(frame, [0, 10], [0, 1], {
     extrapolateRight: "clamp",
     easing: Easing.ease,
   });
 
-  // normalize — your scenes use "url" field
   const videoSrc = scene.videoUrl || (scene as any).url || "";
   const imageSrc = scene.imageUrl || "";
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000", opacity }}>
+      {/* Use Img instead of Video — much less memory */}
       {videoSrc && (
-        <Video
-          src={videoSrc}
+        <Img
+          src={`${videoSrc}?format=jpg`}  // fal.media supports this
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          // Don't wait for full video load — just show frames as they come
-          pauseWhenBuffering={false}
         />
       )}
       {!videoSrc && imageSrc && (
@@ -45,28 +39,6 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({
           src={imageSrc}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-      )}
-      {scene.text && (
-        <AbsoluteFill
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "40px",
-          }}
-        >
-          <p style={{
-            color: "#fff",
-            fontSize: 48,
-            fontWeight: 700,
-            textAlign: "center",
-            textShadow: "0 2px 8px rgba(0,0,0,0.8)",
-            fontFamily: "sans-serif",
-            margin: 0,
-          }}>
-            {scene.text}
-          </p>
-        </AbsoluteFill>
       )}
     </AbsoluteFill>
   );
@@ -92,8 +64,8 @@ const CaptionLayer: React.FC<{
     position === "top"
       ? { top: 80, bottom: undefined }
       : position === "center"
-      ? { top: "50%", transform: "translateY(-50%)" }
-      : { bottom: 120, top: undefined };
+        ? { top: "50%", transform: "translateY(-50%)" }
+        : { bottom: 120, top: undefined };
 
   return (
     <AbsoluteFill>

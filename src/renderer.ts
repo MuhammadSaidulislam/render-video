@@ -16,8 +16,8 @@ process.env.CHROMIUM_FLAGS = [
 ].join(" ");
 const COMPOSITION_ID = "SkeletonExport";
 const FPS = 30;
-const WIDTH = 720;
-const HEIGHT = 1280; // 9:16 vertical — adjust to 1920x1080 for landscape
+const WIDTH = 540;
+const HEIGHT = 960; // 9:16 vertical — adjust to 1920x1080 for landscape
 
 /**
  * Renders a video for the given payload.
@@ -25,7 +25,7 @@ const HEIGHT = 1280; // 9:16 vertical — adjust to 1920x1080 for landscape
  */
 export async function renderVideo(payload: RenderPayload): Promise<string> {
   const { exportId, scenes } = payload;
-console.log("[debug] scene URLs:", payload.scenes.map((s: any) => s.url || s.videoUrl));
+  console.log("[debug] scene URLs:", payload.scenes.map((s: any) => s.url || s.videoUrl));
   // ─── Paths ────────────────────────────────────────────────────────────────
   const workDir = path.join(os.tmpdir(), "remotion-exports", exportId);
   const outputPath = path.join(workDir, `${exportId}.mp4`);
@@ -46,29 +46,29 @@ console.log("[debug] scene URLs:", payload.scenes.map((s: any) => s.url || s.vid
 
   // ─── Bundle ───────────────────────────────────────────────────────────────
   const bundleLocation = await getBundlePath();
-// Sanitize URLs — reject relative paths, only allow full http/https URLs
-function sanitizeUrl(url: string | undefined): string {
-  if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  console.warn(`[renderer] Skipping non-http URL: ${url}`);
-  return ""; // return empty so Remotion skips it
-}
+  // Sanitize URLs — reject relative paths, only allow full http/https URLs
+  function sanitizeUrl(url: string | undefined): string {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    console.warn(`[renderer] Skipping non-http URL: ${url}`);
+    return ""; // return empty so Remotion skips it
+  }
   // ─── Composition input props (passed into your Remotion composition) ──────
   const inputProps = {
-  scenes: payload.scenes,
-  voiceoverUrl: sanitizeUrl(payload.voiceoverUrl),
-  musicUrl: sanitizeUrl(payload.musicUrl),       // ← sanitized
-  musicVolume: payload.musicVolume,
-  captions: payload.captions,
-  defaultCaptionStyle: payload.defaultCaptionStyle,
-};
+    scenes: payload.scenes,
+    voiceoverUrl: sanitizeUrl(payload.voiceoverUrl),
+    musicUrl: sanitizeUrl(payload.musicUrl),       // ← sanitized
+    musicVolume: payload.musicVolume,
+    captions: payload.captions,
+    defaultCaptionStyle: payload.defaultCaptionStyle,
+  };
 
   // ─── Select composition (validates it exists in the bundle) ───────────────
   const composition = await selectComposition({
-   serveUrl: bundleLocation,
-  id: COMPOSITION_ID,
-  inputProps,
-   ...BROWSER,
+    serveUrl: bundleLocation,
+    id: COMPOSITION_ID,
+    inputProps,
+    ...BROWSER,
   });
 
   // ─── Override duration with actual scene data ─────────────────────────────
@@ -83,31 +83,31 @@ function sanitizeUrl(url: string | undefined): string {
   // ─── Render ───────────────────────────────────────────────────────────────
   let lastLoggedProgress = -1;
 
-await renderMedia({
-  composition: finalComposition,
-  serveUrl: bundleLocation,
-  codec: "h264",
-  outputLocation: outputPath,
-  inputProps,
-  ...BROWSER,
-  chromiumOptions: {
-    disableWebSecurity: true,
-    gl: "swiftshader",
-    ignoreCertificateErrors: true,
-    headless: true,
-  },
-  concurrency: 1,
-  timeoutInMilliseconds: 60000,          // 60s per frame timeout
-  imageFormat: "jpeg",
-  jpegQuality: 80,
-  onProgress: ({ progress }) => {
-    const pct = Math.round(progress * 100);
-    if (pct !== lastLoggedProgress && pct % 10 === 0) {
-      lastLoggedProgress = pct;
-      console.log(`[renderer] ${exportId} render progress: ${pct}%`);
-    }
-  },
-});
+  await renderMedia({
+    composition: finalComposition,
+    serveUrl: bundleLocation,
+    codec: "h264",
+    outputLocation: outputPath,
+    inputProps,
+    ...BROWSER,
+    chromiumOptions: {
+      disableWebSecurity: true,
+      gl: "swiftshader",
+      ignoreCertificateErrors: true,
+      headless: true,
+    },
+    concurrency: 1,
+    timeoutInMilliseconds: 60000,          // 60s per frame timeout
+    imageFormat: "jpeg",
+    jpegQuality: 80,
+    onProgress: ({ progress }) => {
+      const pct = Math.round(progress * 100);
+      if (pct !== lastLoggedProgress && pct % 10 === 0) {
+        lastLoggedProgress = pct;
+        console.log(`[renderer] ${exportId} render progress: ${pct}%`);
+      }
+    },
+  });
 
   console.log(`[renderer] ${exportId} ✅ render complete → ${outputPath}`);
   return outputPath;
