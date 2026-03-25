@@ -79,7 +79,7 @@ const CaptionLayer: React.FC<{
 
   const merged = { ...defaultStyle, ...(active.style ?? {}) };
 
-  const position = merged.position ?? "bottom";
+  const position = merged.position ?? "center";
   const verticalStyle: React.CSSProperties =
     position === "top"
       ? { top: 80, bottom: undefined }
