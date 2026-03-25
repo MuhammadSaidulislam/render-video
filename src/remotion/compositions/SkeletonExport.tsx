@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
   Img,
+  OffthreadVideo,
   Video,
   interpolate,
   Easing,
@@ -22,16 +23,18 @@ const SceneItem: React.FC<{ scene: Scene; durationInFrames: number }> = ({ scene
     easing: Easing.ease,
   });
 
-  const imageSrc = scene.imageUrl || (scene as any).thumbnailUrl || "";
-
-  // Background colors per scene for visual variety
-  const colors = ["#1a1a2e", "#16213e", "#0f3460", "#533483"];
-  const bgColor = colors[frame % colors.length] || "#000";
+  const videoSrc = scene.videoUrl || (scene as any).url || "";
+  const imageSrc = scene.imageUrl || "";
 
   return (
-    <AbsoluteFill style={{ backgroundColor: bgColor, opacity }}>
-      {/* Only load static images — no video (too much memory) */}
-      {imageSrc && (
+    <AbsoluteFill style={{ backgroundColor: "#000", opacity }}>
+      {videoSrc && (
+        <OffthreadVideo
+          src={videoSrc}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      )}
+      {!videoSrc && imageSrc && (
         <Img
           src={imageSrc}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
