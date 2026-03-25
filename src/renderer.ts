@@ -15,8 +15,8 @@ process.env.CHROMIUM_FLAGS = [
 ].join(" ");
 const COMPOSITION_ID = "SkeletonExport";
 const FPS = 30;
-const WIDTH = 1080;
-const HEIGHT = 1920; // 9:16 vertical — adjust to 1920x1080 for landscape
+const WIDTH = 720;
+const HEIGHT = 1280; // 9:16 vertical — adjust to 1920x1080 for landscape
 
 /**
  * Renders a video for the given payload.
@@ -95,7 +95,11 @@ await renderMedia({
     headless: true,
   },
   concurrency: 1,        // ← already 1, keep it
-  timeoutInMilliseconds: 120000, // ← increase timeout to 2 min
+  timeoutInMilliseconds: 180000,
+  imageFormat: "jpeg",  // ← jpeg uses much less memory than png
+  jpegQuality: 80,
+  encodingMaxRate: "2M",     // ← cap bitrate to save memory
+  encodingBufferSize: "4M",
   onProgress: ({ progress }) => {
     const pct = Math.round(progress * 100);
     if (pct !== lastLoggedProgress && pct % 10 === 0) {

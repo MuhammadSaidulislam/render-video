@@ -48,24 +48,23 @@ export type Caption = z.infer<typeof CaptionSchema>;
 
 export const SceneSchema = z.object({
   id: z.string().optional(),
+  url: z.string().optional(),           // ← your actual field
   imageUrl: z.string().optional(),
   videoUrl: z.string().optional(),
-  // accept both field names
   durationInFrames: z.number().int().positive().optional(),
-  duration: z.number().optional(),
-  durationSeconds: z.number().optional(),
+  durationSeconds: z.number().optional(), // ← your actual field
   text: z.string().optional(),
   style: z.record(z.unknown()).optional(),
   transition: z.string().optional(),
 }).passthrough()
   .transform((scene) => ({
     ...scene,
-    // normalize to durationInFrames (30fps)
+    // normalize url → videoUrl (since your scenes are .mp4 files)
+    videoUrl: scene.videoUrl ?? scene.url ?? "",
+    // normalize durationSeconds → durationInFrames
     durationInFrames:
       scene.durationInFrames ??
-      (scene.durationSeconds ? Math.round(scene.durationSeconds * 30) : null) ??
-      (scene.duration ? Math.round(scene.duration * 30) : null) ??
-      90, // fallback: 3 seconds
+      Math.round((scene.durationSeconds ?? 3) * 30),
   }));
 
 export type Scene = z.infer<typeof SceneSchema>;
