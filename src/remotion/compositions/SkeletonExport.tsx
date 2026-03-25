@@ -77,43 +77,39 @@ const CaptionLayer: React.FC<{
 
   if (!active) return null;
 
-  const posX = (defaultStyle as any).posX ?? 50; // percentage 0-100
-  const posY = (defaultStyle as any).posY ?? 50; // percentage 0-100
-
-  const strokeWidth = (defaultStyle as any).strokeWidth ?? 0;
-  const strokeColor = (defaultStyle as any).strokeColor ?? "transparent";
-  const shadowX = (defaultStyle as any).shadowX ?? 0;
-  const shadowY = (defaultStyle as any).shadowY ?? 0;
-  const shadowBlur = (defaultStyle as any).shadowBlur ?? 0;
-  const shadowColor = (defaultStyle as any).shadowColor ?? "transparent";
-  const bold = (defaultStyle as any).bold ?? false;
+  const s = defaultStyle as any;
 
   return (
-    <AbsoluteFill>
-      <div
+    <AbsoluteFill style={{ overflow: "visible" }}>
+      <span
         style={{
           position: "absolute",
-          left: `${posX}%`,
-          top: `${posY}%`,
-          transform: "translate(-50%, -50%)", // center on the point
-          width: "80%",
+          left: `${s.posX}%`,
+          top: `${s.posY}%`,
+          transform: "translate(-50%, -50%)",
+          maxWidth: "92%",
+          whiteSpace: "nowrap",
+          overflow: "visible",
+          textOverflow: "clip",
+          fontFamily: `"${s.fontFamily}", sans-serif`,
+          fontSize: s.fontSize,
+          fontWeight: s.bold ? 800 : 500,
+          color: s.color,
+          WebkitTextStroke:
+            s.strokeWidth > 0
+              ? `${s.strokeWidth}px ${s.strokeColor}`
+              : undefined,
+          paintOrder: "stroke fill",
+          textShadow: `${s.shadowX}px ${s.shadowY}px ${s.shadowBlur}px ${s.shadowColor}`,
+          lineHeight: 1.05,
+          letterSpacing: "-0.02em",
           textAlign: "center",
-          fontFamily: defaultStyle.fontFamily ?? "sans-serif",
-          fontSize: defaultStyle.fontSize ?? 36,
-          fontWeight: bold ? 700 : 400,
-          color: defaultStyle.color ?? "#ffffff",
-          // Text stroke via webkit
-          WebkitTextStroke: strokeWidth ? `${strokeWidth}px ${strokeColor}` : undefined,
-          // Text shadow
-          textShadow: shadowBlur || shadowX || shadowY
-            ? `${shadowX}px ${shadowY}px ${shadowBlur}px ${shadowColor}`
-            : undefined,
-          padding: "8px 16px",
-          borderRadius: 6,
+          display: "block",
+          userSelect: "none",
         }}
       >
         {active.text}
-      </div>
+      </span>
     </AbsoluteFill>
   );
 };
