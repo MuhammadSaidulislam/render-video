@@ -92,7 +92,7 @@ const CaptionLayer: React.FC<{
           overflow: "visible",
           textOverflow: "clip",
           fontFamily: `"${s.fontFamily}", sans-serif`,
-          fontSize: s.fontSize,
+          fontSize: s.fontSize*4,
           fontWeight: s.bold ? 800 : 500,
           color: s.color,
           WebkitTextStroke:
