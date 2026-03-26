@@ -27,7 +27,8 @@ const HEIGHT = 1920; // 9:16 vertical — adjust to 1920x1080 for landscape
  */
 export async function renderVideo(payload: RenderPayload): Promise<string> {
   const { exportId, scenes } = payload;
-  console.log("[debug] scene URLs:", payload.scenes.map((s: any) => s.url || s.videoUrl));
+  console.log("[debug] musicUrl URLs:", payload.musicUrl);
+  console.log("[debug] musicVolume URLs:", payload.musicVolume);
   // ─── Paths ────────────────────────────────────────────────────────────────
   const workDir = path.join(os.tmpdir(), "remotion-exports", exportId);
   const outputPath = path.join(workDir, `${exportId}.mp4`);
